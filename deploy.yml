@@ -1,36 +1,49 @@
 ---
-- name: Pull and Run Java Calculator Docker Image
+- name: Deploy Java Calculator using Docker
   hosts: localhost
-  remote_user: bhagyashah05
-  become: false
+  become: yes
   tasks:
 
-    - name: Ensure Docker is installed
-      shell: |
-        if ! command -v docker &> /dev/null; then
-          echo "Docker not found. Installing..."
-          sudo apt update && sudo apt install -y docker.io
-        fi
-      args:
-        executable: /bin/bash
+    - name: Check if Docker is installed
+      command: which docker
+      register: docker_installed
+      ignore_errors: yes
 
-    - name: Start Docker service
-      shell: sudo systemctl start docker
+    - name: Install Docker if not present
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+      when: docker_installed.rc != 0
+
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: restarted
+        enabled: yes
+
+    - name: Remove existing container if running
+      command: docker rm -f calculator-container
+      ignore_errors: yes
 
     - name: Pull the Docker Image from Docker Hub
-      shell: docker pull bhagyashah05/calculator-java:latest
+      command: docker pull bhagyashah05/calculator-java:latest
       register: docker_pull_result
 
     - name: Display Docker Pull Result
       debug:
-        var: docker_pull_result
+        var: docker_pull_result.stdout_lines
 
     - name: Run the Docker Container
-      command: docker run --rm bhagyashah05/calculator-java:latest
+      command: docker run -d --name calculator-container -p 9090:8080 bhagyashah05/calculator-java:latest
       register: container_output
       changed_when: false
 
-    - name: Display Docker Output
-      debug:
-        var: container_output.stdout_lines
+    - name: Display Running Containers
+      command: docker ps
+      register: running_containers
+      changed_when: false
 
+    - name: Show Running Containers
+      debug:
+        var: running_containers.stdout_lines
