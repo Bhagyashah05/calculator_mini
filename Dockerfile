@@ -1,7 +1,14 @@
-FROM openjdk:17-jdk-slim
+FROM openjdk:11
 
 WORKDIR /app
 
-COPY target/calculator_miniproject-1.0-SNAPSHOT.jar app.jar
+COPY src /app/src
 
-CMD ["java", "-jar", "app.jar"]
+RUN curl -o junit-4.13.2.jar https://repo1.maven.org/maven2/junit/junit/4.13.2/junit-4.13.2.jar
+RUN curl -o hamcrest-core-1.3.jar https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar
+
+RUN javac -d classes src/main/java/org/example/Calculator.java
+
+RUN javac -cp classes:junit-4.13.2.jar:hamcrest-core-1.3.jar -d classes src/test/java/CalculatorTest.java
+
+CMD ["java", "-cp", "classes:junit-4.13.2.jar:hamcrest-core-1.3.jar", "org.junit.runner.JUnitCore", "CalculatorTest"]

@@ -1,37 +1,47 @@
-
 import static org.junit.Assert.*;
 
 import org.example.Calculator;
 import org.junit.Test;
 
 public class CalculatorTest {
+
     @Test
-    public void testSquareRoot()     {
-        assertEquals(5.0, Calculator.squareRoot(25), 0.001);
+    public void testSquareRoot() {
+        double result = Calculator.squareRoot(25);
+        System.out.println("Test Square Root: Expected = 5.0, Actual = " + result);
+        assertEquals(5.0, result, 0.001);
     }
 
     @Test
     public void testFactorial() {
-        assertEquals(120, Calculator.factorial(5));
+        long result = Calculator.factorial(5);
+        System.out.println("Test Factorial: Expected = 120, Actual = " + result);
+        assertEquals(120, result);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFactorialNegative() {
+        System.out.println("Test Factorial Negative: Expecting IllegalArgumentException");
         Calculator.factorial(-5);
     }
 
     @Test
     public void testNaturalLog() {
-        assertEquals(0.0, Calculator.naturalLog(1), 0.001);
+        double result = Calculator.naturalLog(1);
+        System.out.println("Test Natural Log: Expected = 0.0, Actual = " + result);
+        assertEquals(0.0, result, 0.001);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNaturalLogNegative() {
+        System.out.println("Test Natural Log Negative: Expecting IllegalArgumentException");
         Calculator.naturalLog(-1);
     }
 
     @Test
     public void testPower() {
-        assertEquals(8.0, Calculator.power(2, 3), 0.001);
+        double result = Calculator.power(2, 3);
+        System.out.println("Test Power: Expected = 8.0, Actual = " + result);
+        assertEquals(8.0, result, 0.001);
     }
 }

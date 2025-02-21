@@ -1,0 +1,36 @@
+---
+- name: Pull and Run Java Calculator Docker Image
+  hosts: localhost
+  remote_user: bhagyashah05
+  become: false
+  tasks:
+
+    - name: Ensure Docker is installed
+      shell: |
+        if ! command -v docker &> /dev/null; then
+          echo "Docker not found. Installing..."
+          sudo apt update && sudo apt install -y docker.io
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Start Docker service
+      shell: sudo systemctl start docker
+
+    - name: Pull the Docker Image from Docker Hub
+      shell: docker pull bhagyashah05/calculator-java:latest
+      register: docker_pull_result
+
+    - name: Display Docker Pull Result
+      debug:
+        var: docker_pull_result
+
+    - name: Run the Docker Container
+      command: docker run --rm bhagyashah05/calculator-java:latest
+      register: container_output
+      changed_when: false
+
+    - name: Display Docker Output
+      debug:
+        var: container_output.stdout_lines
+
