@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'bhagyashah05/calculator-java'
         DOCKER_TAG = 'latest'
-        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
+        DOCKER_HUB_CREDENTIALS = 'docker-credentials'
     }
 
     stages {
@@ -51,10 +51,16 @@ pipeline {
 
     post {
         success {
-            echo '✅ Deployment Successful!'
+            emailext subject: "✅ SUCCESS: Jenkins Job ${JOB_NAME} #${BUILD_NUMBER}",
+                     body: "The build and deployment were successful.\nCheck console output: ${BUILD_URL}console",
+                     to: 'bhagyashah.ashishkumar@iiitb.ac.in'
         }
         failure {
-            echo '❌ Deployment Failed!'
+            emailext subject: "❌ FAILURE: Jenkins Job ${JOB_NAME} #${BUILD_NUMBER}",
+                     body: "The build or deployment failed.\nCheck console output: ${BUILD_URL}console",
+                     to: 'bhagyashah.ashishkumar@iiitb.ac.in'
+
         }
     }
+
 }
